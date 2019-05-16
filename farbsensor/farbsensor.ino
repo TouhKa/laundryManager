@@ -54,12 +54,25 @@ void resetCounter(){
   counterDark = 0;
   counterWhite = 0;
 
+  //reset error flag
+  error = 0;
+  
   //turn off any led
   digitalWrite(ledGreen,LOW);
   digitalWrite(ledRed,LOW);
   digitalWrite(ledBlue,LOW);
   digitalWrite(ledWhite,LOW);
 }
+
+
+void sendErrorWarning(int flag) {
+    if (flag == 0){
+      Serial.print("Ungenaue Messung");
+      error = 1;
+      digitalWrite(ledRed,HIGH);
+      
+    }
+ }
 
 void loop() {
   //TODO check counter if laundry should be done
@@ -68,6 +81,10 @@ void loop() {
   if (buttonState == HIGH) {
     resetCounter();
   }
+
+  if (error != 1){
+ 
+  
 
 //  motionDetected = digitalRead(motionSensor);
 //  if (motionDetected == HIGH) {
@@ -82,7 +99,8 @@ void loop() {
     frequencyRed = pulseIn(colorInput, LOW);
     
     //Remaping the value of the frequency to the RGB Model of 0 to 255
-    frequencyRed = map(frequencyRed, 2,24,255,0);                                             //TODO
+    frequencyRed = map(frequencyRed, 7,57,255,0);  
+    
     
     // Printing the value on the serial monitor
     Serial.print("\n R= ");//printing name
@@ -97,7 +115,7 @@ void loop() {
     frequencyGreen = pulseIn(colorInput,LOW);
     
     //Remaping the value of the frequency to the RGB Model of 0 to 255
-    frequencyGreen = map(frequencyGreen, 3,40,255,0);                                        //TODO
+    frequencyGreen = map(frequencyGreen, 2,66,255,0);                                     
     
     // Printing the value on the serial monitor
     Serial.print("G= ");//printing name
@@ -112,7 +130,7 @@ void loop() {
     frequencyBlue = pulseIn(colorInput,LOW);
     
     //Remaping the value of the frequency to the RGB Model of 0 to 255
-    frequencyBlue = map(frequencyBlue, 2,39,255,0);                      //TODO
+    frequencyBlue = map(frequencyBlue, 2,58,255,0);                      
     
     // Printing the value on the serial monitor
     Serial.print("B= ");//printing name
@@ -144,11 +162,37 @@ void loop() {
         counterDark++;
       }
   */
+       if(frequencyRed >= 200 && frequencyBlue >= 150 && frequencyGreen >= 150) {
+      Serial.println("Weiß erkannt\n");
+      counterWhite++;
+      }
+      else if(frequencyRed >= 170 && frequencyBlue <= 150 && frequencyGreen <= 150) {
+        Serial.println("Rot erkannt\n");
+        counterColoureds++;
+      }
+       else if(frequencyGreen >= 200) {
+        Serial.println("Grün erkannt\n");
+        counterColoureds++;
+      }
+       else if(frequencyBlue >= 100 && frequencyBlue <= 190 && frequencyGreen <= 190) {
+        Serial.println("Blau erkannt\n");
+        counterColoureds++;
+      }
+       else if(frequencyRed <= 150 && frequencyBlue <= 150 && frequencyGreen <= 150) {
+        Serial.println("Schwarz erkannt\n");
+        counterDark++;
+    } else {
+      Serial.println("Messung war ungenau");
+      
+      //turn on red led to signal an error
+      sendErrorWarning(0);
+    }
+
         
 //  }else{
   //  Serial.println("NO Motion detected");
  // }
- 
+  }
   
   delay(loopDelay);       //the button needs to be pressed longer than loopDelay-> should not be too long (>2 sec)
   
