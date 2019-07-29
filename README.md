@@ -1,3 +1,5 @@
+## Laundry Manager
+
 #### Ever been tired of searching the laundry basket, whether there is enough of one color to fill a washing machine?
 
 This Arduino setup shows you via an LED whether there is enough of dark, white or coloured laundry available.
